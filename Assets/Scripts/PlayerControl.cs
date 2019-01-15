@@ -11,10 +11,9 @@ public class PlayerControl : MonoBehaviour
         
         // Add force to ball
         Rigidbody ballRig = ball.GetComponent<Rigidbody>();
-        Debug.Log("Before" + transform.forward);
 
+        // Remove all sins from the vectors and pray to gods of physics
         Vector3 targetVector = new Vector3(Mathf.Cos(angle)*transform.forward.x, Mathf.Sin(angle), Mathf.Cos(angle)* transform.forward.z);
-        Debug.Log("After" + targetVector);
 
         ballRig.AddForce(targetVector * 850f);
         

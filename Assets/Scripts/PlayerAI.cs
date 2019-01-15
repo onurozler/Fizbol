@@ -6,6 +6,13 @@ public class PlayerAI : MonoBehaviour
 {
     // Check if it is target player
     public bool targetPlayer;
+    
+    LevelManager levelManager;
+
+    private void Start()
+    {
+        levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -19,6 +26,8 @@ public class PlayerAI : MonoBehaviour
                 collision.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
                 collision.gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
 
+                levelManager.playerGotTheBall();
+                
                 Destroy(this);
             }
             else

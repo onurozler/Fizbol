@@ -39,16 +39,25 @@ public class LevelManager : MonoBehaviour
 
         //Assign target player
         targetPlayer = bluePlayers.transform.GetChild(target).gameObject;
+        playerGotTheBall();
 
     }
+    
 
-    void Update()
+    public void playerGotTheBall()
     {
-        if(selectedPlayer.GetComponent<PlayerControl>() != null)
-        {
-            shootButton.gameObject.SetActive(true);
-        }
-            
+        // This function is called from PlayerAI.OnCollisionEnter
+
+        // Show shooting ui
+        shootButton.gameObject.SetActive(true);
+
+        //Turn the player towards his next passing mate
+        selectedPlayer.transform.LookAt(targetPlayer.transform);
+        // Put the ball in front of the player in the direction to shoot, put the ball a little bit ahead so that it doesn't collide with player
+        Vector3 newBallPosition = selectedPlayer.transform.position + selectedPlayer.transform.forward * 1.1f;
+        // place the ball on the surface
+        newBallPosition.y = 1.2f;
+        ball.transform.position = newBallPosition;
     }
 
     public void isShootPressed()
@@ -56,15 +65,7 @@ public class LevelManager : MonoBehaviour
             // Find closest Player and add PlayerAI Scripts
             GameObject closest = findClosestPlayer(ball);
             closest.AddComponent<PlayerAI>();
-
-            // Change shooting direction towards next player
-            selectedPlayer.transform.LookAt(targetPlayer.transform);
-
-            // Put the ball in front of the player in the direction to shoot                         put the ball a little bit ahead 
-            Vector3 newBallPosition = selectedPlayer.transform.position + selectedPlayer.transform.forward * 1.1f;
-            // place the ball on the surface
-            newBallPosition.y = 1.2f;
-            ball.transform.position = newBallPosition;
+        
 
             // Shoot from Player
             selectedPlayer.GetComponent<PlayerControl>().shoot(ball);
