@@ -16,6 +16,8 @@ public class PlayerAI : MonoBehaviour
                 print("succes");
                 // Assign new player to be controlled
                 this.gameObject.AddComponent<PlayerControl>();
+                collision.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+                collision.gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
 
                 Destroy(this);
             }

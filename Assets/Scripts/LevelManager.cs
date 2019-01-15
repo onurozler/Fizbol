@@ -45,7 +45,10 @@ public class LevelManager : MonoBehaviour
     void Update()
     {
         if(selectedPlayer.GetComponent<PlayerControl>() != null)
+        {
             shootButton.gameObject.SetActive(true);
+        }
+            
     }
 
     public void isShootPressed()
@@ -53,6 +56,15 @@ public class LevelManager : MonoBehaviour
             // Find closest Player and add PlayerAI Scripts
             GameObject closest = findClosestPlayer(ball);
             closest.AddComponent<PlayerAI>();
+
+            // Change shooting direction towards next player
+            selectedPlayer.transform.LookAt(targetPlayer.transform);
+
+            // Put the ball in front of the player in the direction to shoot                         put the ball a little bit ahead 
+            Vector3 newBallPosition = selectedPlayer.transform.position + selectedPlayer.transform.forward * 1.1f;
+            // place the ball on the surface
+            newBallPosition.y = 1.2f;
+            ball.transform.position = newBallPosition;
 
             // Shoot from Player
             selectedPlayer.GetComponent<PlayerControl>().shoot(ball);
@@ -68,9 +80,13 @@ public class LevelManager : MonoBehaviour
 
             // Assign new targetPlayer
             target++;
-            targetPlayer = bluePlayers.transform.GetChild(target).gameObject;
-            targetPlayer.AddComponent<PlayerAI>();
-            targetPlayer.GetComponent<PlayerAI>().targetPlayer = true;
+
+            if (bluePlayers.transform.childCount > target)
+            {
+                targetPlayer = bluePlayers.transform.GetChild(target).gameObject;
+                targetPlayer.AddComponent<PlayerAI>();
+                targetPlayer.GetComponent<PlayerAI>().targetPlayer = true;
+            }
 
     }
 
