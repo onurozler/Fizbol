@@ -6,7 +6,20 @@ public class PlayerControl : MonoBehaviour
 {
     //PlayerControl to control selected Player
     float angle = 70 * Mathf.Deg2Rad;
-    public void shoot(GameObject ball)
+
+    public GameObject ball;
+
+    //Animation Control
+    private Animator anim;
+
+    private void Start()
+    {
+        // Setting up shooter animation
+        anim = this.GetComponent<Animator>();
+        anim.SetBool("isShooter", true);
+    }
+
+    private void shoot()
     {
         
         // Add force to ball
