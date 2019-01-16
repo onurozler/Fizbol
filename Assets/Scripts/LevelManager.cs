@@ -78,16 +78,15 @@ public class LevelManager : MonoBehaviour
         if (bluePlayers.transform.childCount > target)
         {
             targetPlayer = bluePlayers.transform.GetChild(target).gameObject;
-            
+            targetPlayer.AddComponent<PlayerAI>();
+            targetPlayer.GetComponent<PlayerAI>().targetPlayer = true;
+
         }
         else
         {
             targetPlayer = redPlayers.transform.GetChild(0).gameObject;
         }
-
-        targetPlayer.AddComponent<PlayerAI>();
-        targetPlayer.GetComponent<PlayerAI>().targetPlayer = true;
-
+        
         // Look at new selected player
         targetPlayer.transform.LookAt(selectedPlayer.transform);
     }
