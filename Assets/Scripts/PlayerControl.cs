@@ -28,12 +28,16 @@ public class PlayerControl : MonoBehaviour
         if (canMove)
         {
             // Move Character
-            transform.position += new Vector3(joystick.Horizantal() / 10, 0, 0);
+            transform.position += new Vector3(joystick.Horizantal() / 10 , 0, 0);
             transform.position += new Vector3(0, 0, joystick.Vertical() / 10);
 
             // Move Ball
             ball.transform.position += new Vector3(joystick.Horizantal() / 10, 0, 0);
             ball.transform.position += new Vector3(0, 0, joystick.Vertical() / 10);
+
+            // Rotate Ball
+            ball.transform.Rotate(Vector3.forward * (joystick.Horizantal() * -500 * Time.deltaTime));
+            ball.transform.Rotate(Vector3.right * (joystick.Vertical() * 500 * Time.deltaTime));
 
             // Rotate Character and Ball according to Joystick direction
             if (joystick.Horizantal() != 0 || joystick.Vertical() != 0)
@@ -46,6 +50,8 @@ public class PlayerControl : MonoBehaviour
             // place the ball in front of player
             newBallPosition.y = 1.2f;
             ball.transform.position = newBallPosition;
+
+
 
             // Set up animation according to movement
             anim.SetFloat("Horizantal", joystick.Horizantal());

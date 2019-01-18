@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
@@ -22,7 +23,7 @@ public class LevelManager : MonoBehaviour
 
     // Target player to get pass from controlled Player
     private GameObject targetPlayer;
-    private int target = 1;
+    private bool targetSelect = true;
 
     // Dribbling Timer
     private float dTime = 5.0f;
@@ -43,38 +44,45 @@ public class LevelManager : MonoBehaviour
         selectedPlayer = bluePlayers.transform.GetChild(0).gameObject;
         selectedPlayer.GetComponent<PlayerControl>().joystick = joystick;
         selectedPlayer.GetComponent<PlayerControl>().ball = ball;
-
-        // Start Dribbling Timer
-        StartCoroutine(startDribblingTime(dTime));
-
-        // Assign target player and Look at selected Player
-        targetPlayer = bluePlayers.transform.GetChild(target).gameObject;
-        targetPlayer.transform.LookAt(selectedPlayer.transform);
+        selectedPlayer.GetComponent<PlayerControl>().canMove = false;
 
     }
-    
+
+    private void Update()
+    {
+        // For Testing in Editor
+
+        // Select target by Clicking
+        if (targetSelect)
+        {
+            // Check if it is last player to shoot towards Goalkeeper
+            if (selectedPlayer.name == "bluePlayer6")
+            {
+                print("shoott");
+
+                // Last player doesnt look at, Should be fixed
+
+                selectedPlayer.GetComponent<PlayerControl>().canMove = false;
+                selectedPlayer.transform.LookAt(redPlayers.transform.GetChild(5));
+            }
+            else
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    chooseTarget();
+                }
+            }
+        }
+
+
+        /* For touching on mobile
+        if ((Input.touchCount > 0) && (Input.GetTouch(0).phase == TouchPhase.Began))
+        {
+        }
+        */
+    }
 
     public void playerGotTheBall()
-    {
-        // This function is called from PlayerAI.OnCollisionEnter
-
-        // Makes button Invisible
-        shootButton.gameObject.SetActive(false);
-
-        // Makes timer visible
-        dribblingTime.gameObject.SetActive(true);
-
-        // Show Joystick
-        joystick.gameObject.SetActive(true);
-
-        // Enable him to move
-        selectedPlayer.GetComponent<PlayerControl>().canMove = true;
-
-        // Start Dribbling Time
-        StartCoroutine(startDribblingTime(dTime));
-    }
-
-    public void chooseNewTargetPlayer()
     {
         // This function is called from PlayerAI.OnCollisionEnter
 
@@ -85,24 +93,27 @@ public class LevelManager : MonoBehaviour
         selectedPlayer.GetComponent<PlayerControl>().joystick = joystick;
         selectedPlayer.GetComponent<PlayerControl>().ball = ball;
 
-        // Assign new targetPlayer
-        target++;
+        // Makes button Invisible
+        shootButton.gameObject.SetActive(false);
 
-        // pass to ball to next blue player until last one, then shoot at goalkeeper of other team.
-        if (bluePlayers.transform.childCount > target)
-        {
-            targetPlayer = bluePlayers.transform.GetChild(target).gameObject;
-            targetPlayer.AddComponent<PlayerAI>();
-            targetPlayer.GetComponent<PlayerAI>().targetPlayer = true;
+        // Makes timer visible
+        dribblingTime.gameObject.SetActive(true);
 
-        }
-        else
-        {
-            targetPlayer = redPlayers.transform.GetChild(0).gameObject;
-        }
-        
-        // Look at new selected player
-        targetPlayer.transform.LookAt(selectedPlayer.transform);
+        // Close Joystick
+        joystick.gameObject.SetActive(false);
+
+        // Disable him to move
+        selectedPlayer.GetComponent<PlayerControl>().canMove = false;
+
+        // Enable him to select target
+        targetSelect = true;
+
+        // Put the ball in front of the player in the direction to shoot, put the ball a little bit ahead so that it doesn't collide with player
+        Vector3 newBallPosition = selectedPlayer.transform.position + selectedPlayer.transform.forward * 1.1f;
+
+        // place the ball on the surface
+        newBallPosition.y = 1.2f;
+        ball.transform.position = newBallPosition;
     }
 
     // This function is called when the shoot button Pressed
@@ -114,21 +125,43 @@ public class LevelManager : MonoBehaviour
            // Trigger shoot animation
            selectedPlayer.GetComponent<Animator>().SetBool("isShooting", true);
 
-            // Find closest Player and add PlayerAI Scripts
-            GameObject closest = findClosestPlayer(ball);
-            closest.AddComponent<PlayerAI>();
-
             // Makes button Invisible
             shootButton.gameObject.SetActive(false);
 
             // Makes virtual joystick Invisible
             joystick.gameObject.SetActive(false);
 
+    }
+
+    private void chooseTarget()
+    {
+        RaycastHit hitInfo = new RaycastHit();
+        bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo);
+
+        // Check if the selected player is blue
+        if (hit && hitInfo.transform.gameObject.tag == "blue")
+        {
+            // Assign target player and Look at selected Player
+            targetPlayer = hitInfo.transform.gameObject;
+            targetPlayer.transform.LookAt(selectedPlayer.transform);
+            targetPlayer.AddComponent<PlayerAI>();
+            targetPlayer.GetComponent<PlayerAI>().targetPlayer = true;
+            targetSelect = false;
+
+            // Start Dribbling Timer
+            selectedPlayer.GetComponent<PlayerControl>().canMove = true;
+
+            // Find closest Player and add PlayerAI Scripts
+            GameObject closest = findClosestPlayer(ball);
+            closest.AddComponent<PlayerAI>();
+            StartCoroutine(closestPlayerFollowTheBall(closest, dTime, ball));
+
             //Setting up animation for closest player to catch the ball
             closest.GetComponent<Animator>().SetBool("isRunning", true);
 
-            // Catch the ball in specific of time
-            StartCoroutine(closestPlayerFollowTheBall(closest, 2f));
+            // Make joystick visible
+            joystick.gameObject.SetActive(true);
+        }
     }
 
     private GameObject findClosestPlayer(GameObject ball)
@@ -151,15 +184,20 @@ public class LevelManager : MonoBehaviour
        return closestGameObject;
     }
 
-    private IEnumerator closestPlayerFollowTheBall(GameObject closestPlayer, float duration)
+    // Selected player may do dribbling while closest player try to catch the ball.
+    private IEnumerator closestPlayerFollowTheBall(GameObject closestPlayer, float duration, GameObject tball)
     {
         // Call the function every frame till duration time
         float startTime = Time.time;
         while (Time.time - startTime < duration)
         {
-            closestPlayer.GetComponent<PlayerAI>().catchTheBall(ball);
+            dribblingTime.text = "Kalan Zaman : "+ Mathf.Round(startTime - Time.time + 5);
+            closestPlayer.GetComponent<PlayerAI>().catchTheBall(tball);
             yield return new WaitForFixedUpdate();
         }
+
+        // Reset text
+        dribblingTime.text = "Kalan Zaman : 5";
 
         // After player stops following the ball, jump.
         closestPlayer.GetComponent<Animator>().SetBool("isHeading", true);
@@ -168,18 +206,9 @@ public class LevelManager : MonoBehaviour
         // Stop Running and Destroy Player AI from closest player
         closestPlayer.GetComponent<Animator>().SetBool("isRunning", false);
         Destroy(closestPlayer.GetComponent<PlayerAI>());
-    }
-
-    private IEnumerator startDribblingTime(float dTime)
-    {
-        float startTime = Time.time;
-        while (Time.time - startTime < dTime)
-        {
-            dribblingTime.text = "Kalan Zaman : " + Mathf.Round((dTime - Time.time));
-            yield return new WaitForFixedUpdate();
-        }
 
         // After time finishes
+        // Movement disabled and ready for shoot
 
         // Disable him to move
         selectedPlayer.GetComponent<PlayerControl>().canMove = false;
@@ -202,6 +231,11 @@ public class LevelManager : MonoBehaviour
 
         // Makes button Invisible
         shootButton.gameObject.SetActive(true);
+    }
 
+    // Restart the game
+    public void restartTheGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
