@@ -40,7 +40,6 @@ public class PlayerAI : MonoBehaviour
                 collision.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
                 collision.gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
 
-                levelManager.chooseNewTargetPlayer();
                 levelManager.playerGotTheBall();
                 
                 
@@ -50,16 +49,33 @@ public class PlayerAI : MonoBehaviour
             {
                 // Start the game again
                 print("fail");
+                levelManager.restartTheGame();
             }
         }
     }
 
     // Catch the Ball
-    public void catchTheBall(GameObject ball)
+    public void catchTheBall(GameObject ball, Vector3 middlePoint)
     {
-        // We keep the y axis of the looking direction same so that the player doesn't flip
-        Vector3 lookingDirection = new Vector3(ball.transform.position.x,3, ball.transform.position.z);
-        transform.LookAt(lookingDirection);
-        transform.position += transform.forward * 4 * Time.deltaTime;
+
+        if (Vector3.Distance(transform.position, middlePoint) >= 1.0f)
+        {
+            transform.LookAt(middlePoint);
+            transform.position += transform.forward * 7 * Time.deltaTime;
+        }
+        else
+        {
+           
+        }
+        /*
+      else
+      {
+              // We keep the y axis of the looking direction same so that the player doesn't flip
+
+         Vector3 lookingDirection = new Vector3(ball.transform.position.x, 3, ball.transform.position.z);
+         transform.LookAt(lookingDirection);
+         transform.position += transform.forward * 7 * Time.deltaTime;
+      }
+      */
     }
 }
