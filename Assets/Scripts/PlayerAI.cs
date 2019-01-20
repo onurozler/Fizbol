@@ -55,11 +55,27 @@ public class PlayerAI : MonoBehaviour
     }
 
     // Catch the Ball
-    public void catchTheBall(GameObject ball)
+    public void catchTheBall(GameObject ball, Vector3 middlePoint)
     {
-        // We keep the y axis of the looking direction same so that the player doesn't flip
-        Vector3 lookingDirection = new Vector3(ball.transform.position.x,3, ball.transform.position.z);
-        transform.LookAt(lookingDirection);
-        transform.position += transform.forward * 7 * Time.deltaTime;
+
+        if (Vector3.Distance(transform.position, middlePoint) >= 1.0f)
+        {
+            transform.LookAt(middlePoint);
+            transform.position += transform.forward * 7 * Time.deltaTime;
+        }
+        else
+        {
+           
+        }
+        /*
+      else
+      {
+              // We keep the y axis of the looking direction same so that the player doesn't flip
+
+         Vector3 lookingDirection = new Vector3(ball.transform.position.x, 3, ball.transform.position.z);
+         transform.LookAt(lookingDirection);
+         transform.position += transform.forward * 7 * Time.deltaTime;
+      }
+      */
     }
 }

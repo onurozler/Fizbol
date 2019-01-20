@@ -27,35 +27,42 @@ public class PlayerControl : MonoBehaviour
     {
         if (canMove)
         {
-            // Move Character
-            transform.position += new Vector3(joystick.Horizantal() / 10 , 0, 0);
-            transform.position += new Vector3(0, 0, joystick.Vertical() / 10);
-
-            // Move Ball
-            ball.transform.position += new Vector3(joystick.Horizantal() / 10, 0, 0);
-            ball.transform.position += new Vector3(0, 0, joystick.Vertical() / 10);
-
-            // Rotate Ball
-            ball.transform.Rotate(Vector3.forward * (joystick.Horizantal() * -500 * Time.deltaTime));
-            ball.transform.Rotate(Vector3.right * (joystick.Vertical() * 500 * Time.deltaTime));
-
-            // Rotate Character and Ball according to Joystick direction
-            if (joystick.Horizantal() != 0 || joystick.Vertical() != 0)
+            // Keep the player inside pitch
+            if(joystick.Horizantal() > 0 && transform.position.x > 38.5f || joystick.Horizantal() < 0 && transform.position.x < -38.5f
+                || joystick.Vertical() < 0 && transform.position.z < -85f)
             {
-                float angle = Mathf.Atan2(joystick.Horizantal(), joystick.Vertical()) * Mathf.Rad2Deg;
-                transform.rotation = Quaternion.Euler(new Vector3(0, angle, 0));
+                transform.position = new Vector3(transform.position.x,transform.position.y,transform.position.z);
             }
-            Vector3 newBallPosition = transform.position + transform.forward * 1.1f;
+            else
+            {
+                // Move Character
+                transform.position += new Vector3(0, 0, joystick.Vertical() / 10);
+                transform.position += new Vector3(joystick.Horizantal() / 10, 0, 0);
 
-            // place the ball in front of player
-            newBallPosition.y = 1.2f;
-            ball.transform.position = newBallPosition;
+                // Move Ball
+                ball.transform.position += new Vector3(joystick.Horizantal() / 10, 0, 0);
+                ball.transform.position += new Vector3(0, 0, joystick.Vertical() / 10);
 
+                // Rotate Ball
+                ball.transform.Rotate(Vector3.forward * (joystick.Horizantal() * -500 * Time.deltaTime));
+                ball.transform.Rotate(Vector3.right * (joystick.Vertical() * 500 * Time.deltaTime));
 
+                // Rotate Character and Ball according to Joystick direction
+                if (joystick.Horizantal() != 0 || joystick.Vertical() != 0)
+                {
+                    float angle = Mathf.Atan2(joystick.Horizantal(), joystick.Vertical()) * Mathf.Rad2Deg;
+                    transform.rotation = Quaternion.Euler(new Vector3(0, angle, 0));
+                }
+                Vector3 newBallPosition = transform.position + transform.forward * 1.1f;
 
-            // Set up animation according to movement
-            anim.SetFloat("Horizantal", joystick.Horizantal());
-            anim.SetFloat("Vertical", joystick.Vertical());
+                // place the ball in front of player
+                newBallPosition.y = 1.2f;
+                ball.transform.position = newBallPosition;
+
+                // Set up animation according to movement
+                anim.SetFloat("Horizantal", joystick.Horizantal());
+                anim.SetFloat("Vertical", joystick.Vertical());
+            }
         }
 
        

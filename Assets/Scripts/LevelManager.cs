@@ -10,6 +10,7 @@ public class LevelManager : MonoBehaviour
     [Header("References for GameObjects")]
     //Reference for all Players
     public GameObject allPlayers;
+    public PhysicMaterial ballPhysic;
 
     // Reference for ball
     public GameObject ball;
@@ -33,9 +34,15 @@ public class LevelManager : MonoBehaviour
     public Button shootButton;
     public VirtualJoystick joystick;
     public Text dribblingTime;
+    public Camera camera2D;
+    public Camera mainCamera;
+    public Button button2D; 
     
     void Start()
     {
+        // Add Listener to Button 2D
+        button2D.onClick.AddListener(() => changeTo2D());
+
         // Assign teams
         bluePlayers = allPlayers.transform.GetChild(0).gameObject;
         redPlayers = allPlayers.transform.GetChild(1).gameObject;
@@ -45,7 +52,6 @@ public class LevelManager : MonoBehaviour
         selectedPlayer.GetComponent<PlayerControl>().joystick = joystick;
         selectedPlayer.GetComponent<PlayerControl>().ball = ball;
         selectedPlayer.GetComponent<PlayerControl>().canMove = false;
-
     }
 
     private void Update()
@@ -58,12 +64,15 @@ public class LevelManager : MonoBehaviour
             // Check if it is last player to shoot towards Goalkeeper
             if (selectedPlayer.name == "bluePlayer6")
             {
-                print("shoott");
-
-                // Last player doesnt look at, Should be fixed
+                // Players can select 2D
+                button2D.gameObject.SetActive(true);
 
                 selectedPlayer.GetComponent<PlayerControl>().canMove = false;
-                selectedPlayer.transform.LookAt(redPlayers.transform.GetChild(5));
+
+                selectedPlayer.transform.LookAt(redPlayers.transform.GetChild(0));
+
+                // Put ball in front of player
+                putBallInfrontOfPlayer();
             }
             else
             {
@@ -102,18 +111,22 @@ public class LevelManager : MonoBehaviour
         // Close Joystick
         joystick.gameObject.SetActive(false);
 
+        // Reset bounce
+        ball.GetComponent<SphereCollider>().material = null;
+
         // Disable him to move
         selectedPlayer.GetComponent<PlayerControl>().canMove = false;
 
         // Enable him to select target
         targetSelect = true;
 
-        // Put the ball in front of the player in the direction to shoot, put the ball a little bit ahead so that it doesn't collide with player
-        Vector3 newBallPosition = selectedPlayer.transform.position + selectedPlayer.transform.forward * 1.1f;
+        // Put ball in front of player
+        putBallInfrontOfPlayer();
 
-        // place the ball on the surface
-        newBallPosition.y = 1.2f;
-        ball.transform.position = newBallPosition;
+        // Disable 2D button && Camera
+        button2D.gameObject.SetActive(false);
+        mainCamera.gameObject.SetActive(true);
+        camera2D.gameObject.SetActive(false);
     }
 
     // This function is called when the shoot button Pressed
@@ -131,15 +144,22 @@ public class LevelManager : MonoBehaviour
             // Makes virtual joystick Invisible
             joystick.gameObject.SetActive(false);
 
+           // Add bounce to ball
+           ball.GetComponent<SphereCollider>().material = ballPhysic;
+
     }
 
     private void chooseTarget()
     {
+        // Selected can just pass closer player, it is controlled by gameobject indexes.
+        int selectedIndex = selectedPlayer.transform.GetSiblingIndex();
+        if (selectedIndex == 1) selectedIndex++;
+
         RaycastHit hitInfo = new RaycastHit();
         bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo);
 
-        // Check if the selected player is blue
-        if (hit && hitInfo.transform.gameObject.tag == "blue")
+        // Check if the selected player is blue and target index - selected index < 3 (It enables just selected player to pass closer target)
+        if (hit && hitInfo.transform.gameObject.tag == "blue" && hitInfo.transform.GetSiblingIndex() - selectedIndex < 3)
         {
             // Assign target player and Look at selected Player
             targetPlayer = hitInfo.transform.gameObject;
@@ -152,7 +172,8 @@ public class LevelManager : MonoBehaviour
             selectedPlayer.GetComponent<PlayerControl>().canMove = true;
 
             // Find closest Player and add PlayerAI Scripts
-            GameObject closest = findClosestPlayer(ball);
+            selectedIndex = selectedPlayer.transform.GetSiblingIndex();
+            GameObject closest = redPlayers.transform.GetChild(selectedIndex + 1).gameObject;
             closest.AddComponent<PlayerAI>();
             StartCoroutine(closestPlayerFollowTheBall(closest, dTime, ball));
 
@@ -164,26 +185,6 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    private GameObject findClosestPlayer(GameObject ball)
-    {
-       // Assuming the first is closest
-       float closest = Vector3.Distance(redPlayers.transform.GetChild(0).position, ball.transform.position);
-       GameObject closestGameObject = redPlayers.transform.GetChild(0).gameObject;
-
-        // Checking if another player is more close
-       for (int i = 1; i < redPlayers.transform.childCount; i++)
-       {
-           float distance = Vector3.Distance(redPlayers.transform.GetChild(i).position, ball.transform.position);
-           if(distance < closest)
-                {
-                    closestGameObject = redPlayers.transform.GetChild(i).gameObject;
-                    closest = distance;
-                }
-        }
-
-       return closestGameObject;
-    }
-
     // Selected player may do dribbling while closest player try to catch the ball.
     private IEnumerator closestPlayerFollowTheBall(GameObject closestPlayer, float duration, GameObject tball)
     {
@@ -192,7 +193,8 @@ public class LevelManager : MonoBehaviour
         while (Time.time - startTime < duration)
         {
             dribblingTime.text = "Kalan Zaman : "+ Mathf.Round(startTime - Time.time + 5);
-            closestPlayer.GetComponent<PlayerAI>().catchTheBall(tball);
+            Vector3 middlePoint = (selectedPlayer.transform.position + targetPlayer.transform.position) / 2;
+            closestPlayer.GetComponent<PlayerAI>().catchTheBall(tball,middlePoint);
             yield return new WaitForFixedUpdate();
         }
 
@@ -222,15 +224,50 @@ public class LevelManager : MonoBehaviour
         // Make invisible the Text
         dribblingTime.gameObject.SetActive(false);
 
+        // Put ball in front of player
+        putBallInfrontOfPlayer();
+
+        // Makes button Invisible
+        shootButton.gameObject.SetActive(true);
+
+        // Players can select 2D
+        button2D.gameObject.SetActive(true);
+    }
+
+    // Put ball in front of player
+    private void putBallInfrontOfPlayer()
+    {
         // Put the ball in front of the player in the direction to shoot, put the ball a little bit ahead so that it doesn't collide with player
         Vector3 newBallPosition = selectedPlayer.transform.position + selectedPlayer.transform.forward * 1.1f;
 
         // place the ball on the surface
         newBallPosition.y = 1.2f;
         ball.transform.position = newBallPosition;
+    }
 
-        // Makes button Invisible
-        shootButton.gameObject.SetActive(true);
+    // Change camera to 2D
+    public void changeTo2D()
+    {
+        if(button2D.gameObject.name == "2dButton")
+        {
+            camera2D.transform.position = new Vector3(72f,5f,selectedPlayer.transform.position.z + 15f);
+
+            mainCamera.gameObject.SetActive(false);
+            camera2D.gameObject.SetActive(true);
+            button2D.gameObject.name = "3dButton";
+            targetPlayer.GetComponent<Animator>().SetBool("isTarget",false);
+            targetPlayer.transform.rotation = Quaternion.Euler(new Vector3(0, -365.273f,0));
+        }
+        else
+        {
+            mainCamera.gameObject.SetActive(true);
+            camera2D.gameObject.SetActive(false);
+            button2D.gameObject.name = "2dButton";
+            targetPlayer.GetComponent<Animator>().SetBool("isTarget", true);
+            targetPlayer.transform.LookAt(selectedPlayer.transform);
+
+        }
+
     }
 
     // Restart the game
