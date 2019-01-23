@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 [Serializable]
 public class Question
 {
-    public int angle, speed, speedX, speedY, maxH, maxX, flightTime, timePassed, distance, height;
+    public int angle, speed, speedX, speedY, maxH, maxX, flightTime, timePassed, distance, height, result;
 
+    public static List<QuestionType> angleDominantQuestionTypes = new List<QuestionType>() { QuestionType.Speed_AngleToMaxH, QuestionType.Speed_AngleToFlightTime,QuestionType.MaxHToFlightTime,QuestionType.Speed_AngleToTc,QuestionType.Speed_Time_AngleToHeight,QuestionType.SpeedYToMaxH,QuestionType.SpeedYToFlightTime };
+    public static List<QuestionType> speedDominantQuestionTypes = new List<QuestionType>() { QuestionType.Speed_AngleToMaxX ,QuestionType.MaxH_AngleToMaxX,QuestionType.MaxH_AngleToSpeed ,QuestionType.SpeedX_FlightTimeToSpeed ,QuestionType.Angle_Time_DistanceToSpeed ,QuestionType.Speed_Time_AngleToDistance ,QuestionType.SpeedX_FlightTimeToDistance };
 
+    // Prints all not empty variables of this question
     public override string ToString()
     {
         StringBuilder stringBuilder = new StringBuilder();
@@ -73,3 +77,5 @@ public enum QuestionType
     SpeedX_FlightTimeToDistance,
     SpeedYToFlightTime
 }
+
+

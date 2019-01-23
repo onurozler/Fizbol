@@ -54,19 +54,40 @@ public class PlayerAI : MonoBehaviour
         }
     }
 
-    // Catch the Ball
-    public void catchTheBall(GameObject ball, Vector3 middlePoint)
+    // Trigger head animation
+    public IEnumerator head(GameObject ball)
     {
+        transform.GetComponent<Animator>().SetBool("isRunning", false);
+        Vector3 ballV;
+        Vector3 closestV;
+        do
+        {
+            ballV = new Vector3(ball.transform.position.x, 5, ball.transform.position.z);
+            closestV = new Vector3(transform.position.x, 5, transform.position.z);
+            yield return new WaitForFixedUpdate();
+        } while (Vector3.Distance(ballV, closestV) >= 5.0f);
 
-        if (Vector3.Distance(transform.position, middlePoint) >= 1.0f)
+        
+        transform.GetComponent<Animator>().SetBool("isHeading",true);
+    }
+
+    // Catch the Ball
+    public void catchTheBall(Vector3 middlePoint)
+    {
+        transform.GetComponent<Animator>().SetBool("isRunning", true);
+
+        //When the threshold gets below .5f, the never stops running and twitches
+        if (Vector3.Distance(transform.position, middlePoint) > .5f )
         {
             transform.LookAt(middlePoint);
-            transform.position += transform.forward * 7 * Time.deltaTime;
+            transform.position += transform.forward * 4 * Time.deltaTime;  
         }
         else
         {
-           
+            transform.GetComponent<Animator>().SetBool("isRunning", false);
+
         }
+
         /*
       else
       {

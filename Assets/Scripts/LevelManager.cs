@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class LevelManager : MonoBehaviour
 {
@@ -26,22 +27,31 @@ public class LevelManager : MonoBehaviour
     private GameObject targetPlayer;
     private bool targetSelect = true;
 
+    // Closest Player
+    private GameObject closest;
+
     // Dribbling Timer
     private float dTime = 5.0f;
 
+    // 2D sprites for 2D view
+    private GameObject distanceSprite;
+    private GameObject angleSprite;
+
     // UI Items
     [Header("UI Items")]
-    public Button shootButton;
     public VirtualJoystick joystick;
     public Text dribblingTime;
     public Camera camera2D;
     public Camera mainCamera;
-    public Button button2D; 
+    public GameObject Sprites2D;
+    public QuestionManager questionManager;
     
     void Start()
     {
-        // Add Listener to Button 2D
-        button2D.onClick.AddListener(() => changeTo2D());
+        Physics.gravity = new Vector3(0, -10.0F, 0);
+        // Assign 2D sprites
+        distanceSprite = Sprites2D.transform.GetChild(0).gameObject;
+        angleSprite = Sprites2D.transform.GetChild(1).gameObject;
 
         // Assign teams
         bluePlayers = allPlayers.transform.GetChild(0).gameObject;
@@ -49,6 +59,7 @@ public class LevelManager : MonoBehaviour
 
         // Assign selected player
         selectedPlayer = bluePlayers.transform.GetChild(0).gameObject;
+        selectedPlayer.AddComponent<PlayerControl>();
         selectedPlayer.GetComponent<PlayerControl>().joystick = joystick;
         selectedPlayer.GetComponent<PlayerControl>().ball = ball;
         selectedPlayer.GetComponent<PlayerControl>().canMove = false;
@@ -64,9 +75,6 @@ public class LevelManager : MonoBehaviour
             // Check if it is last player to shoot towards Goalkeeper
             if (selectedPlayer.name == "bluePlayer6")
             {
-                // Players can select 2D
-                button2D.gameObject.SetActive(true);
-
                 selectedPlayer.GetComponent<PlayerControl>().canMove = false;
 
                 selectedPlayer.transform.LookAt(redPlayers.transform.GetChild(0));
@@ -83,7 +91,6 @@ public class LevelManager : MonoBehaviour
             }
         }
 
-
         /* For touching on mobile
         if ((Input.touchCount > 0) && (Input.GetTouch(0).phase == TouchPhase.Began))
         {
@@ -95,16 +102,21 @@ public class LevelManager : MonoBehaviour
     {
         // This function is called from PlayerAI.OnCollisionEnter
 
+
+        Mode2D(false);
+        Sprites2D.SetActive(false);
+
+        // Destroy closes component
+        if (closest != null)
+            Destroy(closest.GetComponent<PlayerAI>());
+
         // New selected Player is target Player
         selectedPlayer = targetPlayer;
 
         // Give ball and Joystick Reference
         selectedPlayer.GetComponent<PlayerControl>().joystick = joystick;
         selectedPlayer.GetComponent<PlayerControl>().ball = ball;
-
-        // Makes button Invisible
-        shootButton.gameObject.SetActive(false);
-
+        
         // Makes timer visible
         dribblingTime.gameObject.SetActive(true);
 
@@ -122,32 +134,46 @@ public class LevelManager : MonoBehaviour
 
         // Put ball in front of player
         putBallInfrontOfPlayer();
-
-        // Disable 2D button && Camera
-        button2D.gameObject.SetActive(false);
+        
         mainCamera.gameObject.SetActive(true);
         camera2D.gameObject.SetActive(false);
+        
     }
 
     // This function is called when the shoot button Pressed
-    public void isShootPressed()
+    public void isShootPressed(int angle)
     {
         // Shoot function in Player Control is called in shoot animation frame when 
         // the ball comes out of the Selected player's foot.
+        
+        selectedPlayer.GetComponent<PlayerControl>().angle = angle;
+        selectedPlayer.GetComponent<PlayerControl>().distance = Vector3.Distance(ball.transform.position, targetPlayer.transform.position);
 
-           // Trigger shoot animation
-           selectedPlayer.GetComponent<Animator>().SetBool("isShooting", true);
+        // Trigger shoot animation
+        selectedPlayer.GetComponent<Animator>().SetBool("isShooting", true);
+        
+        // Makes virtual joystick Invisible
+        joystick.gameObject.SetActive(false);
 
-            // Makes button Invisible
-            shootButton.gameObject.SetActive(false);
-
-            // Makes virtual joystick Invisible
-            joystick.gameObject.SetActive(false);
-
-           // Add bounce to ball
-           ball.GetComponent<SphereCollider>().material = ballPhysic;
+        // Add bounce to ball
+        ball.GetComponent<SphereCollider>().material = ballPhysic;
 
     }
+    public void isShootPressed(int angle, bool isAngleDominant, float multiplier)
+    {
+        // The incorrect answer alters the multipliers of PlayerControl, which changes the physics input values
+        if (isAngleDominant)
+        {
+            selectedPlayer.GetComponent<PlayerControl>().angleMultiplier = multiplier;
+        }
+        else
+        {
+            selectedPlayer.GetComponent<PlayerControl>().distanceMultiplier = multiplier;
+        }
+
+        isShootPressed(angle);
+    }
+
 
     private void chooseTarget()
     {
@@ -173,9 +199,9 @@ public class LevelManager : MonoBehaviour
 
             // Find closest Player and add PlayerAI Scripts
             selectedIndex = selectedPlayer.transform.GetSiblingIndex();
-            GameObject closest = redPlayers.transform.GetChild(selectedIndex + 1).gameObject;
+            closest = redPlayers.transform.GetChild(selectedIndex + 1).gameObject;
             closest.AddComponent<PlayerAI>();
-            StartCoroutine(closestPlayerFollowTheBall(closest, dTime, ball));
+            StartCoroutine(closestPlayerFollowTheBall(closest, dTime));
 
             //Setting up animation for closest player to catch the ball
             closest.GetComponent<Animator>().SetBool("isRunning", true);
@@ -186,7 +212,7 @@ public class LevelManager : MonoBehaviour
     }
 
     // Selected player may do dribbling while closest player try to catch the ball.
-    private IEnumerator closestPlayerFollowTheBall(GameObject closestPlayer, float duration, GameObject tball)
+    private IEnumerator closestPlayerFollowTheBall(GameObject closestPlayer, float duration)
     {
         // Call the function every frame till duration time
         float startTime = Time.time;
@@ -194,20 +220,18 @@ public class LevelManager : MonoBehaviour
         {
             dribblingTime.text = "Kalan Zaman : "+ Mathf.Round(startTime - Time.time + 5);
             Vector3 middlePoint = (selectedPlayer.transform.position + targetPlayer.transform.position) / 2;
-            closestPlayer.GetComponent<PlayerAI>().catchTheBall(tball,middlePoint);
+            closestPlayer.GetComponent<PlayerAI>().catchTheBall(middlePoint);
             yield return new WaitForFixedUpdate();
         }
 
         // Reset text
         dribblingTime.text = "Kalan Zaman : 5";
 
-        // After player stops following the ball, jump.
-        closestPlayer.GetComponent<Animator>().SetBool("isHeading", true);
-        //closestPlayer.GetComponent<Rigidbody>().AddForce(Vector3.up * 600);
+        // Look at the selected.
+        closestPlayer.transform.LookAt(selectedPlayer.transform);
 
-        // Stop Running and Destroy Player AI from closest player
-        closestPlayer.GetComponent<Animator>().SetBool("isRunning", false);
-        Destroy(closestPlayer.GetComponent<PlayerAI>());
+        // Trigger head animation
+        StartCoroutine(closest.GetComponent<PlayerAI>().head(ball));
 
         // After time finishes
         // Movement disabled and ready for shoot
@@ -226,12 +250,32 @@ public class LevelManager : MonoBehaviour
 
         // Put ball in front of player
         putBallInfrontOfPlayer();
+        
+        // Hide joystick
+        joystick.gameObject.SetActive(false);
 
-        // Makes button Invisible
-        shootButton.gameObject.SetActive(true);
+        // Brings up the question UI and holds the control until player answeres correctly
+        questionManager.AskQuestion();
 
-        // Players can select 2D
-        button2D.gameObject.SetActive(true);
+        Sprites2D.SetActive(false);
+    }
+
+    public void DisplayInfoSprites(int angle, int distance)
+    {
+        // Put 2D Sprites
+        // Distance
+        Transform distanceS = distanceSprite.transform.GetChild(0);
+        distanceSprite.transform.position = (selectedPlayer.transform.position + targetPlayer.transform.position) / 2;
+        distanceS.LookAt(targetPlayer.transform);
+        distanceS.localEulerAngles = new Vector3(0, distanceS.localEulerAngles.y + 90f, 0); ;
+        distanceS.GetComponent<SpriteRenderer>().size = new Vector2(Vector3.Distance(selectedPlayer.transform.position, targetPlayer.transform.position), 0.2f);
+        distanceSprite.transform.GetChild(1).GetComponent<TextMeshPro>().text = "Uzaklik : " + ((distance == 0) ? "x" : angle.ToString());
+        distanceSprite.transform.localPosition = new Vector3(distanceSprite.transform.localPosition.x + 0.55f, -10.7f, distanceSprite.transform.localPosition.z - 5f);
+
+        // Angle
+        angleSprite.transform.position = ball.transform.position;
+        angleSprite.transform.GetChild(1).GetComponent<TextMeshPro>().text = "Açi : " + ((angle==0)?"a":angle.ToString()) + "°";
+        angleSprite.transform.GetChild(0).localEulerAngles = new Vector3(0, 0, (angle == 0) ? 60 : angle);
     }
 
     // Put ball in front of player
@@ -246,28 +290,57 @@ public class LevelManager : MonoBehaviour
     }
 
     // Change camera to 2D
-    public void changeTo2D()
+    public void changeTo2D(bool is3D)
     {
-        if(button2D.gameObject.name == "2dButton")
+        if(is3D)
         {
-            camera2D.transform.position = new Vector3(72f,5f,selectedPlayer.transform.position.z + 15f);
+            // Camera position accourding to selected
+            camera2D.transform.position = new Vector3(72f,4f,selectedPlayer.transform.position.z + 15f);
 
+            // Settings for 2D
             mainCamera.gameObject.SetActive(false);
             camera2D.gameObject.SetActive(true);
-            button2D.gameObject.name = "3dButton";
-            targetPlayer.GetComponent<Animator>().SetBool("isTarget",false);
-            targetPlayer.transform.rotation = Quaternion.Euler(new Vector3(0, -365.273f,0));
+            Mode2D(true);
+
+            // Setting for 2D Sprites
+            Sprites2D.SetActive(true);
         }
         else
         {
+            // Settings for 3D
             mainCamera.gameObject.SetActive(true);
             camera2D.gameObject.SetActive(false);
-            button2D.gameObject.name = "2dButton";
-            targetPlayer.GetComponent<Animator>().SetBool("isTarget", true);
-            targetPlayer.transform.LookAt(selectedPlayer.transform);
+            Mode2D(false);
+            Sprites2D.SetActive(false);
 
         }
 
+    }
+
+    // 2D Mode settings, game objects become invisible to prevent conflicts except target,selected and closest.
+    private void Mode2D(bool check)
+    {
+        for(int i = 0 ; i < 6; i++)
+        {
+            if (check)
+            {
+                if (bluePlayers.transform.GetChild(i).name != selectedPlayer.name && bluePlayers.transform.GetChild(i).name != targetPlayer.name)
+                    bluePlayers.transform.GetChild(i).gameObject.SetActive(false);
+
+                if (redPlayers.transform.GetChild(i).name != closest.name)
+                    redPlayers.transform.GetChild(i).gameObject.SetActive(false);
+
+                redPlayers.transform.GetChild(0).gameObject.SetActive(true);
+            }
+            else
+            {
+                if (bluePlayers.transform.GetChild(i).name != selectedPlayer.name && bluePlayers.transform.GetChild(i).name != targetPlayer.name)
+                    bluePlayers.transform.GetChild(i).gameObject.SetActive(true);
+
+                if (redPlayers.transform.GetChild(i).name != closest.name)
+                    redPlayers.transform.GetChild(i).gameObject.SetActive(true);
+            }
+        }
     }
 
     // Restart the game

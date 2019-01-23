@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -36,7 +35,9 @@ public class QuestionGenerator
                     {
                         speed = i,
                         angle = sinAnglesArray[j],
-                        maxH = (int)maxH
+                        maxH = (int)maxH,
+                        result = (int)maxH
+
                     };
                     questions.Add(q);
                 }
@@ -62,7 +63,8 @@ public class QuestionGenerator
                     {
                         speed = i,
                         angle = sinAnglesArray[j],
-                        maxX = (int)maxX
+                        maxX = (int)maxX,
+                        result = (int)maxX
                     };
                     questions.Add(q);
                 }
@@ -87,7 +89,8 @@ public class QuestionGenerator
                     {
                         speed = i,
                         angle = sinAnglesArray[j],
-                        flightTime = (int)flightTime
+                        flightTime = (int)flightTime,
+                        result = (int)flightTime
                     };
                     questions.Add(q);
                 }
@@ -109,7 +112,8 @@ public class QuestionGenerator
             {
                 maxH = question.maxH,
                 angle = question.angle,
-                maxX = (int)maxX
+                maxX = (int)maxX,
+                result = (int)maxX
             };
             questions.Add(q);
 
@@ -120,23 +124,22 @@ public class QuestionGenerator
     public static List<Question> GenerateMaxH_AngleToSpeed(List<Question> maxHQuestions)
     {
         // The result of this function gives the same list as the maxHQuestions
-        /**List<Question> questions = new List<Question>();
+        List<Question> questions = new List<Question>();
 
         foreach (var question in maxHQuestions)
         {
-            float speed = GetSpeedFromMaxH_Angle(question.maxH, question.angle);
-
             Question q = new Question()
             {
                 maxH = question.maxH,
                 angle = question.angle,
-                speed = (int)speed
+                speed = question.speed,
+                result = question.speed
             };
             questions.Add(q);
 
-        }*/
+        }
 
-        return maxHQuestions;
+        return questions;
     }
     public static List<Question> GenerateMaxHToFlightTime()
     {
@@ -148,6 +151,7 @@ public class QuestionGenerator
             {
                 flightTime = i,
                 maxH = i * i * 5,
+                result = i
 
             };
             questions.Add(q);
@@ -162,13 +166,13 @@ public class QuestionGenerator
         for (int i = 1; i <= 5; i++)
         {
             //8,15,17
-            questions.Add(new Question() { speedX = 8 * i, flightTime = 3 * i, speed = 17 * i });
+            questions.Add(new Question() { speedX = 8 * i, flightTime = 3 * i, speed = 17 * i, result = 17 * i});
             //12,5,13
-            questions.Add(new Question() { speedX = 12 * i, flightTime = 1 * i, speed = 13 * i });
+            questions.Add(new Question() { speedX = 12 * i, flightTime = 1 * i, speed = 13 * i, result = 13 * i});
             //3,4,5
-            questions.Add(new Question() { speedX = 3 * 5 * i, flightTime = 4 * i, speed = 5 * 5 * i });
+            questions.Add(new Question() { speedX = 3 * 5 * i, flightTime = 4 * i, speed = 5 * 5 * i, result = 5 * 5 * i});
             //4,3,5
-            questions.Add(new Question() { speedX = 4 * 5 * i, flightTime = 3 * i, speed = 5 * 5 * i });
+            questions.Add(new Question() { speedX = 4 * 5 * i, flightTime = 3 * i, speed = 5 * 5 * i, result = 5 * 5 * i});
         }
 
         return questions;
@@ -192,7 +196,8 @@ public class QuestionGenerator
                             speed = (int)speed,
                             angle = sinAnglesArray[t],
                             timePassed = j,
-                            distance = i
+                            distance = i,
+                            result = (int)speed
 
                         };
                         questions.Add(q);
@@ -220,7 +225,9 @@ public class QuestionGenerator
                     {
                         speed = i,
                         angle = sinAnglesArray[j],
-                        flightTime = (int)flightTime
+                        flightTime = (int)flightTime,
+                        result = ((int)flightTime)/2
+
                     };
                     questions.Add(q);
                 }
@@ -244,7 +251,8 @@ public class QuestionGenerator
                     speed = ftQuestion.speed,
                     angle = ftQuestion.angle,
                     timePassed = i,
-                    height = (int)height
+                    height = (int)height,
+                    result = (int)height
                 };
                 questions.Add(q);
             }
@@ -271,7 +279,8 @@ public class QuestionGenerator
                             speed = i,
                             angle = sinAnglesArray[j],
                             timePassed = t,
-                            distance = (int)distance
+                            distance = (int)distance,
+                            result = (int)distance
                         };
                         questions.Add(q);
                     }
@@ -290,7 +299,8 @@ public class QuestionGenerator
             Question q = new Question()
             {
                 speedY = i,
-                maxH = (int)GetMaxH(i)
+                maxH = (int)GetMaxH(i),
+                result = (int)GetMaxH(i)
             };
             questions.Add(q);
         }
@@ -309,6 +319,7 @@ public class QuestionGenerator
                 flightTime = r.Next(1, 20)
             };
             q.distance = q.speedX * q.flightTime;
+            q.result = q.distance;
             questions.Add(q);
         }
 
@@ -326,7 +337,7 @@ public class QuestionGenerator
             };
 
             q.flightTime = (int)GetFlightTime(q.speedY);
-
+            q.result = q.flightTime;
             questions.Add(q);
         }
 

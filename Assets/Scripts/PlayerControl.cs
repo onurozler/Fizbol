@@ -5,7 +5,11 @@ using UnityEngine;
 public class PlayerControl : MonoBehaviour
 {
     //PlayerControl to control selected Player
-    float angle = 70 * Mathf.Deg2Rad;
+    public int angle = 60;
+    public float distance;
+    public float distanceMultiplier = 1f;
+    public float angleMultiplier = 1f;
+
     public GameObject ball;
     public VirtualJoystick joystick;
 
@@ -28,20 +32,16 @@ public class PlayerControl : MonoBehaviour
         if (canMove)
         {
             // Keep the player inside pitch
-            if(joystick.Horizantal() > 0 && transform.position.x > 38.5f || joystick.Horizantal() < 0 && transform.position.x < -38.5f
-                || joystick.Vertical() < 0 && transform.position.z < -85f)
-            {
-                transform.position = new Vector3(transform.position.x,transform.position.y,transform.position.z);
-            }
-            else
+            if (!(joystick.Horizantal() > 0 && transform.position.x > 38.5f || joystick.Horizantal() < 0 && transform.position.x < -38.5f
+                || joystick.Vertical() < 0 && transform.position.z < -85f))
             {
                 // Move Character
-                transform.position += new Vector3(0, 0, joystick.Vertical() / 10);
-                transform.position += new Vector3(joystick.Horizantal() / 10, 0, 0);
+                transform.position += new Vector3(0, 0, joystick.Vertical() / (Time.deltaTime * 700));
+                transform.position += new Vector3(joystick.Horizantal() / (Time.deltaTime * 700), 0, 0);
 
                 // Move Ball
-                ball.transform.position += new Vector3(joystick.Horizantal() / 10, 0, 0);
-                ball.transform.position += new Vector3(0, 0, joystick.Vertical() / 10);
+                ball.transform.position += new Vector3(joystick.Horizantal() / (Time.deltaTime * 500), 0, 0);
+                ball.transform.position += new Vector3(0, 0, joystick.Vertical() / (Time.deltaTime * 500));
 
                 // Rotate Ball
                 ball.transform.Rotate(Vector3.forward * (joystick.Horizantal() * -500 * Time.deltaTime));
@@ -65,20 +65,31 @@ public class PlayerControl : MonoBehaviour
             }
         }
 
-       
+
     }
 
     private void shoot()
     {
-        
+
         // Add force to ball
         Rigidbody ballRig = ball.GetComponent<Rigidbody>();
 
-        // Remove all sins from the vectors and pray to gods of physics
-        Vector3 targetVector = new Vector3(Mathf.Cos(angle)*transform.forward.x, Mathf.Sin(angle), Mathf.Cos(angle)* transform.forward.z);
+        float angleRad = angle * Mathf.Deg2Rad;
 
-        ballRig.AddForce(targetVector * 850f);
-        
+        // Remove all sins from the vectors and pray to gods of physics
+        Vector3 targetVector = new Vector3(Mathf.Cos(angleRad * angleMultiplier) * transform.forward.x, Mathf.Sin(angleRad * angleMultiplier), Mathf.Cos(angleRad * angleMultiplier) * transform.forward.z);
+
+        // This multiplier will change the course of the ball if the answer is wrong
+        distance *= distanceMultiplier;
+
+        // Speed is calculated using the angle and the distance
+        float force = Mathf.Sqrt((distance * (Physics.gravity.y * -1)) / Mathf.Sin(angleRad * 2));
+
+
+        // Directly set the velocity instead of adding force to have percise control of the ball
+        ballRig.velocity = targetVector * force;
+
+
         // Destroy PlayerControl script from selected Player
         Destroy(this);
     }
