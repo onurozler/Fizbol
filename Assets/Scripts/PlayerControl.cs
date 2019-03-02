@@ -19,11 +19,15 @@ public class PlayerControl : MonoBehaviour
     //Animation Control
     private Animator anim;
 
+    private SoundEffectsController soundEffectPlayer;
+
     private void Start()
     {
         // Setting up shooter animation
         anim = this.GetComponent<Animator>();
         anim.SetBool("isShooter", true);
+
+        soundEffectPlayer = GameObject.Find("SoundEffectController").GetComponent<SoundEffectsController>();
     }
 
     // Character Movement
@@ -32,12 +36,20 @@ public class PlayerControl : MonoBehaviour
         if (canMove)
         {
             // Keep the player inside pitch
-            if (!(joystick.Horizantal() > 0 && transform.position.x > 38.5f || joystick.Horizantal() < 0 && transform.position.x < -38.5f
-                || joystick.Vertical() < 0 && transform.position.z < -85f))
+
+            if (!(joystick.Horizantal() > 0 && transform.position.x > 58.5f || joystick.Horizantal() < 0 && transform.position.x < -58.5f
+    || joystick.Vertical() < 0 && transform.position.z < -103.5f))
             {
+
+                // This check prevents errors when game is resumed from paused menu.
+                if (Time.deltaTime == 0)
+                {
+                    return;
+                }
+
                 // Move Character
-                transform.position += new Vector3(0, 0, joystick.Vertical() / (Time.deltaTime * 700));
-                transform.position += new Vector3(joystick.Horizantal() / (Time.deltaTime * 700), 0, 0);
+                transform.position += new Vector3(0, 0, joystick.Vertical() / (Time.deltaTime * 1000));
+                transform.position += new Vector3(joystick.Horizantal() / (Time.deltaTime * 1000), 0, 0);
 
                 // Move Ball
                 ball.transform.position += new Vector3(joystick.Horizantal() / (Time.deltaTime * 500), 0, 0);
@@ -62,6 +74,7 @@ public class PlayerControl : MonoBehaviour
                 // Set up animation according to movement
                 anim.SetFloat("Horizantal", joystick.Horizantal());
                 anim.SetFloat("Vertical", joystick.Vertical());
+
             }
         }
 
@@ -89,8 +102,13 @@ public class PlayerControl : MonoBehaviour
         // Directly set the velocity instead of adding force to have percise control of the ball
         ballRig.velocity = targetVector * force;
 
+        
+
+        Time.timeScale = 1.5f;
+        anim.SetBool("isShooting", false);
 
         // Destroy PlayerControl script from selected Player
-        Destroy(this);
+        //Destroy(this);
+        soundEffectPlayer.PlayKick();
     }
 }

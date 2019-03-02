@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class QuestionManager : MonoBehaviour
 {
@@ -13,19 +13,26 @@ public class QuestionManager : MonoBehaviour
 
     private static string binFileName = "questions.bytes";
 
-    public GameObject gameCanvas;
-    public GameObject questionCanvas;
+    public GameObject gamePanel;
+    public GameObject questionPanel;
+    public GameObject helpPanel;
+    public GameObject popupPanel;
+    public GameObject trueOrFalse;
 
-    public TMP_Text questionText;
-    public TMP_InputField answerInput;
-
-    private bool is3D = true;
+    public Text questionText;
+    public InputField answerInput;
+    public Text answerText;
+    
 
     public LevelManager levelManager;
 
     private QuestionType[] questionTypes = (QuestionType[])Enum.GetValues(typeof(QuestionType));
 
+    private int incorrectAnswerCount = 0;
 
+    private int renewQuestionCount = 3;
+
+    private float lastshotTimestamp = 0f;
 
     private System.Random random = new System.Random(System.DateTime.Now.Millisecond);
 
@@ -123,24 +130,78 @@ public class QuestionManager : MonoBehaviour
         }
 
     }
-    public void AskQuestion()
+    public void AskQuestion(bool repeatLastQuestion)
     {
+        
+        if (!repeatLastQuestion)
+        {
+
+            // Switch to question UI
+            gamePanel.SetActive(false);
+            questionPanel.SetActive(true);
+
+            incorrectAnswerCount = 0;
+
+            // Get a random question type
+            currentQuestionType = questionTypes[random.Next(questionTypes.Length)];
+
+            // Get a random question of that type
+            currentQuestion = questions[currentQuestionType][random.Next(questions[currentQuestionType].Length)];
+
+            levelManager.DisplayInfoSprites(currentQuestion.angle, currentQuestion.distance);
+
+            questionText.text = GetQuestionText();
+
+            answerText.text = currentQuestion.result.ToString();
+            Debug.Log("Answer: " + currentQuestion.result);
+        }
+        else
+        {
+
+            // when the incorrectAnswerCount hits 4, show the correct answer, other wise show wrong answer message
+            if (incorrectAnswerCount > 3)
+            {
+                popupPanel.GetComponentInChildren<Text>().text = "Hakkınız Doldu!\nDoğru cevap :" + currentQuestion.result + ".";
+                popupPanel.SetActive(true);
+            }
+            else
+            {
+                // Show the wrong indication
+                trueOrFalse.GetComponent<Text>().color = Color.red;
+                trueOrFalse.GetComponent<Text>().text = "Yanlış!";
+                trueOrFalse.GetComponent<Animator>().SetTrigger("setAnim");
+                ClosePopup();
+            }
+        }
+    }
+
+    public void RenewQuestion()
+    {
+        if (renewQuestionCount>0)
+        {
+            renewQuestionCount--;
+
+            AskQuestion(false);
+        }
+        else
+        {
+            popupPanel.SetActive(true);
+            popupPanel.GetComponentInChildren<Text>().text = "Soru değiştirme\nhakkınız bitti!";
+        }
+    }
+
+    public void ClosePopup()
+    {
+        popupPanel.SetActive(false);
         // Switch to question UI
-        gameCanvas.SetActive(false);
-        questionCanvas.SetActive(true);
+        questionPanel.SetActive(true);
 
-        // Get a random question type
-        currentQuestionType = questionTypes[random.Next(questionTypes.Length)];
+    }
 
-        // Get a random question of that type
-        currentQuestion = questions[currentQuestionType][random.Next(questions[currentQuestionType].Length)];
-        
-        levelManager.DisplayInfoSprites(currentQuestion.angle,currentQuestion.distance);
-
-        questionText.text = GetQuestionText();
-
-        Debug.Log("Answer: " + currentQuestion.result);
-        
+    public void ToggleHelpPanel()
+    {
+        questionPanel.SetActive(!questionPanel.activeSelf);
+        helpPanel.SetActive(!helpPanel.activeSelf);
     }
 
     private string GetQuestionText()
@@ -194,39 +255,96 @@ public class QuestionManager : MonoBehaviour
 
     public void CheckAnswer()
     {
-        // TryParse prevents trhrowing an exception when user's answer is blank
+
+        // This prevents user from spamming the "Vur" button.
+        if ((Time.time-lastshotTimestamp)<2f)
+        {
+            return;
+        }
+
+        lastshotTimestamp = Time.time;
+
+        // TryParse prevents throwing an exception when user's answer is blank
         int.TryParse(answerInput.text, out int answer);
 
+        // Get angle, if it doesn't exist in question, set 60 deg as default
+        int angle = (currentQuestion.angle == 0) ? 60 : currentQuestion.angle;
         // Clear answer
         answerInput.text = "";
 
+        // Switch the active UI and return control to LevelManager
+        gamePanel.SetActive(true);
+        questionPanel.SetActive(false);
+
         if (answer == currentQuestion.result)
-        {           
-            // Switch the active UI and return control to LevelManager
-            gameCanvas.SetActive(true);
-            questionCanvas.SetActive(false);
+        {
+            setGoalsToday(false);
 
-            // reset view variable since it switches to 3d by default
-            is3D = true;
-
-            // Give the angle a default value if it doesn't exist
-
-            levelManager.isShootPressed((currentQuestion.angle == 0) ? 60 : currentQuestion.angle);
+            levelManager.isShootPressed(angle,1f,1f);
         }
         else
         {
+            
+            incorrectAnswerCount++;
+
+
             // If the answer is incorrect, change the route of the ball slightly to reflect the wrong answer
             // ex: shoot over the target if the answer is greater than real result
-            float multiplier = (answer > currentQuestion.result) ? 1.4f : 0.4f;
+            float distanceMultiplier = (answer * 1f) / (currentQuestion.result * 1f);
 
-            // 2 different types of change in route: speed or angle
-            levelManager.isShootPressed((currentQuestion.angle == 0) ? 60 : currentQuestion.angle, Question.angleDominantQuestionTypes.Contains(currentQuestionType), multiplier);
+            if (distanceMultiplier > 5f)
+            {
+                distanceMultiplier = 5f;
+            }
+            else if (distanceMultiplier > 1f && distanceMultiplier < 1.1f)
+            {
+                distanceMultiplier = 1.1f;
+            }
+            else if (distanceMultiplier < 1f && distanceMultiplier > 0.85f)
+            {
+                distanceMultiplier = 0.85f;
+            }
+            else if (distanceMultiplier < 0.2)
+            {
+                distanceMultiplier = 0.2f;
+            }
+
+            // Prevent angle from passing 80 deg
+            float angleMultiplier = (distanceMultiplier > 80f / angle) ? 80f / angle : distanceMultiplier;
+
+            levelManager.isShootPressed(angle, angleMultiplier, distanceMultiplier);
+
+            setGoalsToday(true);
         }
     }
 
-    public void SwitchView()
+
+    public void setGoalsToday(bool fail)
     {
-        levelManager.changeTo2D(is3D);
-        is3D = !is3D;
+        string lastStatistic = PlayerPrefs.GetString("playerStatistic");
+        // Get last record
+        string[] getWhole = lastStatistic.Split(',');
+
+        string[] getLastDay = getWhole[getWhole.Length - 1].Split('-');
+        string[] getAnswers = getLastDay[1].Split(';');
+
+        int trueAnswer = int.Parse(getAnswers[0]);
+        int falseAnswer = int.Parse(getAnswers[1]);
+
+        if (fail)
+            falseAnswer++;
+        else if (!fail && incorrectAnswerCount <= 3)
+        {
+            trueAnswer++;
+        }
+            
+
+        PlayerPrefs.SetString("playerStatistic", "");
+        for (int i = 0; i < getWhole.Length - 1; i++)
+        {
+            PlayerPrefs.SetString("playerStatistic", PlayerPrefs.GetString("playerStatistic") + getWhole[i] + ",");
+        }
+
+        PlayerPrefs.SetString("playerStatistic", PlayerPrefs.GetString("playerStatistic") + getLastDay[0] + "-" + trueAnswer + ";" + falseAnswer);
     }
 }

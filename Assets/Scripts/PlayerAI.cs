@@ -24,34 +24,23 @@ public class PlayerAI : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+
+    // Trigger goalkeeper animation
+    public IEnumerator goalkeeper(GameObject ball)
     {
-        if(collision.transform.tag == "ball")
+        Vector3 ballV;
+        Vector3 goalkeeperV;
+        do
         {
-            if(targetPlayer)
-            {
-                print("succes");
+            ballV = new Vector3(ball.transform.position.x, 5, ball.transform.position.z);
+            goalkeeperV = new Vector3(transform.position.x, 5, transform.position.z);
+            yield return new WaitForFixedUpdate();
+        } while (Vector3.Distance(ballV, goalkeeperV) >= 15f);
 
-                // Reset animator
-                anim.SetBool("isTarget", false);
-
-                // Assign new player to be controlled
-                this.gameObject.AddComponent<PlayerControl>();
-                collision.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
-                collision.gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-
-                levelManager.playerGotTheBall();
-                
-                
-                Destroy(this);
-            }
-            else
-            {
-                // Start the game again
-                print("fail");
-                levelManager.restartTheGame();
-            }
-        }
+        if (goalkeeperV.x < ballV.x)
+            transform.GetComponent<Animator>().SetBool("isSaveRight", true);
+        else
+            transform.GetComponent<Animator>().SetBool("isSaveLeft", true);
     }
 
     // Trigger head animation
