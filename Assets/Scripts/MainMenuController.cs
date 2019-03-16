@@ -210,18 +210,18 @@ public class MainMenuController : MonoBehaviour
 
     private string monthName(int i)
     {
-        if (i == 1) return "Ocak";
-        else if (i == 2) return "Subat";
-        else if (i == 3) return "Mart";
-        else if (i == 4) return "Nisan";
-        else if (i == 5) return "Mayis";
-        else if (i == 6) return "Haziran";
-        else if (i == 7) return "Temmuz";
-        else if (i == 8) return "Agustos";
-        else if (i == 9) return "Eylül";
-        else if (i == 10) return "Ekim";
-        else if (i == 11) return "Kasim";
-        else return "Aralik";
+        if (i == 1) return LocalizeBase.GetLocalizedString("january");
+        else if (i == 2) return LocalizeBase.GetLocalizedString("febuary");
+        else if (i == 3) return LocalizeBase.GetLocalizedString("march");
+        else if (i == 4) return LocalizeBase.GetLocalizedString("april");
+        else if (i == 5) return LocalizeBase.GetLocalizedString("may");
+        else if (i == 6) return LocalizeBase.GetLocalizedString("june");
+        else if (i == 7) return LocalizeBase.GetLocalizedString("july");
+        else if (i == 8) return LocalizeBase.GetLocalizedString("august");
+        else if (i == 9) return LocalizeBase.GetLocalizedString("september");
+        else if (i == 10) return LocalizeBase.GetLocalizedString("october");
+        else if (i == 11) return LocalizeBase.GetLocalizedString("november");
+        else return LocalizeBase.GetLocalizedString("december");
     }
 
     private void loadGraphs()
@@ -236,9 +236,9 @@ public class MainMenuController : MonoBehaviour
         // Find true and false answers
         string[] answers = lastDate[1].Split(';');
         // Set last record values
-        dateText.text = "Bugunun Verileri\n" + lastDate[0];
-        succesfulText.text = "Dogru Cevap : " + answers[0];
-        failText.text = "Yanlis Cevap : " + answers[1];
+        dateText.text = LocalizeBase.GetLocalizedString("stats_todays_data") + lastDate[0];
+        succesfulText.text = LocalizeBase.GetLocalizedString("stats_correct_answers") + answers[0];
+        failText.text = LocalizeBase.GetLocalizedString("stats_incorrect_answers") + answers[1];
         // Set circle graph
 
         // Find percentage
@@ -254,7 +254,7 @@ public class MainMenuController : MonoBehaviour
         // Get This month
         string today = System.DateTime.Now.ToString("dd/MM/yyyy");
         string[] thisMonth = today.Split(delimeter);
-        chart.transform.parent.GetChild(4).GetComponent<Text>().text = monthName(int.Parse(thisMonth[1])) + " Ayı Verileri";
+        chart.transform.parent.GetChild(4).GetComponent<Text>().text = monthName(int.Parse(thisMonth[1])) + LocalizeBase.GetLocalizedString("stats_months_data");
 
         for (int i = 0; i < getWhole.Length; i++)
         {

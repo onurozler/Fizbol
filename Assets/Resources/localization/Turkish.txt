@@ -1,0 +1,94 @@
+﻿play=Oyna
+settings=Ayarlar
+stats=İstatistikler
+about=Hakkında
+music=Muzik
+effects=Efektler
+volume=Ses Seviyesi
+graphics=Grafikler
+low=Düşük
+medium=Orta
+high=Yüksek
+info=Fizbol, öğrencilerin Fizik dersinin temel konularını severek öğrenmesi için geliştirilmiştir. Şikayet ve önerilerinizi geliştiricilere iletilebilirsiniz.
+thanks=Teşekkürler!
+devs=Developers
+continue=Devam
+close=Kapat
+ok=Tamam
+
+tutorial_1_title=Egiticı moda hosgeldınız!
+tutorial_1_hint=(İlk defa oynuyorsanız, aşamaları izlemenizi öneririz.)
+tutorial_dont_show=Bir daha gösterme
+tutorial_2_title=oyun Baslangıcı
+tutorial_2_content=Oyuna kaleci olarak başlıyoruz. Amacımız, Fizik sorularını bilerek takım arkadaşlarımıza pas atıp en sonda ise gol atmaktır. Pas atabileceğimiz takım arkadaşlarımızın üstünde sarı bir işaret bulunmaktadır. Lütfen birini seçiniz.
+tutorial_3_title=Hareket ettırme ve pozısyon alma
+tutorial_3_content=Pas atacağımız arkadaşımızı seçtikten sonra, sol atta çıkan joystick ile 5 saniye içinde oyuncumuzu hareket ettirebilir ve pozisyon alabilirsiniz. 
+tutorial_4_title=Soru cevaplama ve pas atma
+tutorial_4_content=Pozisyon aldıktan sonra ise karşımıza bir Fizik sorusu çıkar. Sorunun hemen köşesinde bulunan Y butonu ile yeni bir soru talep edebiliriz. (maksimum 3 defa) Ya da soru işaretine tıklayarak, gerekli formülleri ya da soru için işe yarayacak bilgileri bulabilirsiniz.
+tutorial_5_title=2 Boyutlu ekran
+tutorial_5_content=Ekranın sağ üst köşesinde bulunan 2D/3D butonu ile soruya ister 2 boyutlu ister 3 boyutlu olarak bakabilirsiniz. Müfredattaki soru tiplerine benzediğinden dolayı, soru çözerken sıklıkla 2 boyutluyu kullanmanızı öneririz.
+tutorial_6_content=Yanlış cevap girildiği taktirde kullanıcılara 3 tane daha hak verilir. Bu haklar da yanlış ile sonuçlandığında doğru cevap gösterilir. (Lakin doğru cevap gösterildiğinde istatistiklerde onun yanlış sayılacağını unutmayın!)
+tutorial_6_title=yanlıs cevap hakkında
+tutorial_7_title=dogru cevap hakkında
+tutorial_7_content=Dogru cevap girildiği taktirde takım arkadaşımızın önündeki bölgeye başarılı bir şekilde pas atmış oluruz.\n**İpucu : Oyuncumuz şutu fizik kuralları çerçevesinde doğru cevaba göre atar. Yani cevabınız doğru cevaptan çok uzak bir sonuçsa top daha uzağa atılacaktır ya da cevabınız yakınsa takım arkadaşımızın yakınına atacaktır.\n***İpucu : Aynı şekilde eğer cevap, doğru cevaptan yüksek ise takım arkadaşımızın üstünden geçer ya da düşükse ona ulaşmadan durur.
+İlk sorumuzu denemeye hazırmısın? İpuclarını sakın unutma!
+tutorial_8_title=Forvet ve gol hakkında
+tutorial_8_content=Soruları bilerek topu en son forvet oyuncumuza ulaştırdığımızda, vuruş yapabileceğimiz 2 hedef çıkar. Gol vuruşu yapmadan önce bu hedeflerden birini seçmeliyiz.\nSarı hedeflerden birini seç ve gol için hazırlan!
+tutorial_9_title=Son olarak...
+tutorial_9_content=Hedefi seçtikten sonra harşımıza tekrardan bir Fizik sorusu çıkar, önceki sorular ile aynı kurallar işlenmektedir. Oyun bittikten sonra menudeki istatistik ekranıyla bugünün ve içinde bulunduğumuz ayın verilerini inceleyebilirsin!\nİyi Eğlenceler!
+
+question_title=Soru :
+question_answer_placeholder=Cevap
+question_kick=Vur!
+play_again=Tekrar Oyna
+returnto_menu=Menüye Dön
+
+
+
+stats_months_data= Ayı Verileri
+stats_correct_answers=Dogru Cevap : 
+stats_incorrect_answers=Yanlis Cevap : 
+stats_todays_data=Bugunun Verileri\n
+stats_true_false=Doğru/Yanlış
+stats_date=Tarih
+
+january=Ocak
+febuary=Şubat
+march=Mart
+april=Nisan
+may=Mayıs
+june=Haziran
+july=Temmuz
+august=Ağustos
+september=Eylül
+october=Ekim
+november=Kasım
+december=Aralık
+
+
+
+Speed_AngleToMaxH=Hızı {0} m/s olan top {1} derece açı ile atıldığına göre, çıkabileceği en yüksek nokta yerden kaç metredir?
+Speed_AngleToMaxX=Hızı {0} m/s olan top {1} derece açı ile atıldığına göre, ulaşabileceği en uzak nokta yatay eksende kaç metredir?
+Speed_AngleToFlightTime=Hızı {0} m/s olan top {1} derece açı ile atıldığına göre, topun yere düşmesi kaç saniye sürer?
+MaxH_AngleToMaxX=Çıkabileceği en yüksek nokta {0}m olan top {1} derece açı ile atıldığına göre, ulaşabileceği en uzak nokta yatay eksende kaç metredir?
+MaxH_AngleToSpeed=Çıkabileceği en yüksek nokta {0}m olan top {1} derece açı ile atıldığına göre, topun ilk hızı kaç m/s'dir?
+MaxHToFlightTime=Çıkabileceği en yüksek nokta {0}m olan topun yere düşmesi kaç saniye sürer?
+SpeedX_FlightTimeToSpeed=Yatay hızı {0} m/s olan top {1} saniyede yere düştüğüne göre, topun fırlatılma hızı kaç m/s'dir?
+Angle_Time_DistanceToSpeed={0} derece açı ile vurulan top {1} saniyede yatay eksende {2}m yol aldığına göre, topun vurulma hızı kaç m/s'dir?
+Speed_AngleToTc=Hızı {0} m/s olan top {1} derece açı ile atıldığına göre, çıkabileceği en yüksek noktaya çıkış süresi kaç saniyedir?
+Speed_Time_AngleToHeight= Hızı {0} m/s olan top {1} derece açı ile atıldığına göre, topun {2}s sonra yerden yüksekliği kaç metredir?
+Speed_Time_AngleToDistance=Hızı {0} m/s olan top {1} derece açı ile atıldığına göre, topun {2}s sonra yatay eksende katettiği yol kaç metredir?
+SpeedYToMaxH=Dikey hızı {0} m/s olan topun yerden çıkabileceği en yüksek nokta kaç metredir?
+SpeedX_FlightTimeToDistance=Yatay hızı {0} m/s olan top {1} saniyede yere düştüğüne göre, topun menzili kaç metredir?
+SpeedYToFlightTime=Dikey hızı {0} m/s olan topun havada kalma süresi kaç saniyedir?
+
+time_left=Kalan Zaman : 
+distance=Uzaklık : x
+angle=Açı : 
+answer=Cevap
+kick=Vur!
+
+correct=Correct!
+incorrect=Yanlış!
+change_question_exhausted=Soru değiştirme\nhakkınız bitti!
+reveal_correct_answer=Hakkınız Doldu!\nDoğru cevap :{0}.

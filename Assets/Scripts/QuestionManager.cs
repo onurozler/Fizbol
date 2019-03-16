@@ -161,14 +161,14 @@ public class QuestionManager : MonoBehaviour
             // when the incorrectAnswerCount hits 4, show the correct answer, other wise show wrong answer message
             if (incorrectAnswerCount > 3)
             {
-                popupPanel.GetComponentInChildren<Text>().text = "Hakkınız Doldu!\nDoğru cevap :" + currentQuestion.result + ".";
+                popupPanel.GetComponentInChildren<Text>().text = String.Format(LocalizeBase.GetLocalizedString("reveal_correct_answer"), currentQuestion.result);
                 popupPanel.SetActive(true);
             }
             else
             {
                 // Show the wrong indication
                 trueOrFalse.GetComponent<Text>().color = Color.red;
-                trueOrFalse.GetComponent<Text>().text = "Yanlış!";
+                trueOrFalse.GetComponent<Text>().text = LocalizeBase.GetLocalizedString("incorrect");
                 trueOrFalse.GetComponent<Animator>().SetTrigger("setAnim");
                 ClosePopup();
             }
@@ -186,7 +186,7 @@ public class QuestionManager : MonoBehaviour
         else
         {
             popupPanel.SetActive(true);
-            popupPanel.GetComponentInChildren<Text>().text = "Soru değiştirme\nhakkınız bitti!";
+            popupPanel.GetComponentInChildren<Text>().text = LocalizeBase.GetLocalizedString("change_question_exhausted");
         }
     }
 
@@ -209,45 +209,33 @@ public class QuestionManager : MonoBehaviour
         switch (currentQuestionType)
         {
             case QuestionType.Speed_AngleToMaxH:
-                return "Hızı " + currentQuestion.speed + "m/s olan top " + currentQuestion.angle +
-                    " derece açı ile atıldığına göre, çıkabileceği en yüksek nokta yerden kaç metredir?";
+                return String.Format(LocalizeBase.GetLocalizedString("Speed_AngleToMaxH"), currentQuestion.speed, currentQuestion.angle);
             case QuestionType.Speed_AngleToMaxX:
-                return "Hızı " + currentQuestion.speed + "m/s olan top " + currentQuestion.angle +
-                    " derece açı ile atıldığına göre, ulaşabileceği en uzak nokta yatay eksende kaç metredir?";
+                return String.Format(LocalizeBase.GetLocalizedString("Speed_AngleToMaxX"), currentQuestion.speed, currentQuestion.angle);
             case QuestionType.Speed_AngleToFlightTime:
-                return "Hızı " + currentQuestion.speed + "m/s olan top " + currentQuestion.angle +
-                    " derece açı ile atıldığına göre, topun yere düşmesi kaç saniye sürer?";
+                return String.Format(LocalizeBase.GetLocalizedString("Speed_AngleToFlightTime"), currentQuestion.speed, currentQuestion.angle);
             case QuestionType.MaxH_AngleToMaxX:
-                return "Çıkabileceği en yüksek nokta " + currentQuestion.maxH +
-                    "m olan top " + currentQuestion.angle + " derece açı ile atıldığına göre, ulaşabileceği en uzak nokta yatay eksende kaç metredir?";
+                return String.Format(LocalizeBase.GetLocalizedString("MaxH_AngleToMaxX"), currentQuestion.maxH, currentQuestion.angle);
             case QuestionType.MaxH_AngleToSpeed:
-                return "Çıkabileceği en yüksek nokta " + currentQuestion.maxH +
-                    "m olan top " + currentQuestion.angle + " derece açı ile atıldığına göre, topun ilk hızı kaç m/s'dir?";
+                return String.Format(LocalizeBase.GetLocalizedString("MaxH_AngleToSpeed"), currentQuestion.maxH, currentQuestion.angle);
             case QuestionType.MaxHToFlightTime:
-                return "Çıkabileceği en yüksek nokta " + currentQuestion.maxH +
-                    "m olan topun yere düşmesi kaç saniye sürer?";
+                return String.Format(LocalizeBase.GetLocalizedString("MaxHToFlightTime"), currentQuestion.maxH);
             case QuestionType.SpeedX_FlightTimeToSpeed:
-                return "Yatay hızı " + currentQuestion.speedX + "m/s olan top " + currentQuestion.flightTime +
-                    " saniyede yere düştüğüne göre, topun fırlatılma hızı kaç m/s'dir?";
+                return String.Format(LocalizeBase.GetLocalizedString("SpeedX_FlightTimeToSpeed"), currentQuestion.speedX, currentQuestion.flightTime);
             case QuestionType.Angle_Time_DistanceToSpeed:
-                return currentQuestion.angle + " derece açı ile vurulan top " + currentQuestion.timePassed +
-                    " saniyede yatay eksende " + currentQuestion.distance + "m yol aldığına göre, topun vurulma hızı kaç m/s'dir?";
+                return String.Format(LocalizeBase.GetLocalizedString("Angle_Time_DistanceToSpeed"), currentQuestion.angle, currentQuestion.timePassed, currentQuestion.distance);
             case QuestionType.Speed_AngleToTc:
-                return "Hızı " + currentQuestion.speed + "m/s olan top " + currentQuestion.angle +
-                    " derece açı ile atıldığına göre, çıkabileceği en yüksek noktaya çıkış süresi kaç saniyedir?";
+                return String.Format(LocalizeBase.GetLocalizedString("Speed_AngleToTc"), currentQuestion.speed, currentQuestion.angle);
             case QuestionType.Speed_Time_AngleToHeight:
-                return "Hızı " + currentQuestion.speed + "m/s olan top " + currentQuestion.angle +
-                    " derece açı ile atıldığına göre, topun " + currentQuestion.timePassed + "s sonra yerden yüksekliği kaç metredir?";
+                return String.Format(LocalizeBase.GetLocalizedString("Speed_Time_AngleToHeight"), currentQuestion.speed, currentQuestion.angle, currentQuestion.timePassed);
             case QuestionType.Speed_Time_AngleToDistance:
-                return "Hızı " + currentQuestion.speed + "m/s olan top " + currentQuestion.angle +
-                    " derece açı ile atıldığına göre, topun " + currentQuestion.timePassed + "s sonra yatay eksende katettiği yol kaç metredir?";
+                return String.Format(LocalizeBase.GetLocalizedString("Speed_Time_AngleToDistance"), currentQuestion.speed, currentQuestion.angle, currentQuestion.timePassed);
             case QuestionType.SpeedYToMaxH:
-                return "Dikey hızı " + currentQuestion.speedY + "m/s olan topun yerden çıkabileceği en yüksek nokta kaç metredir?";
+                return String.Format(LocalizeBase.GetLocalizedString("SpeedYToMaxH"), currentQuestion.speedY);
             case QuestionType.SpeedX_FlightTimeToDistance:
-                return "Yatay hızı " + currentQuestion.speedX + "m/s olan top " + currentQuestion.flightTime +
-                    " saniyede yere düştüğüne göre, topun menzili kaç metredir?";
+                return String.Format(LocalizeBase.GetLocalizedString("SpeedX_FlightTimeToDistance"), currentQuestion.speedX, currentQuestion.flightTime);
             case QuestionType.SpeedYToFlightTime:
-                return "Dikey hızı " + currentQuestion.speedY + "m/s olan topun havada kalma süresi kaç saniyedir?";
+                return String.Format(LocalizeBase.GetLocalizedString("SpeedYToFlightTime"), currentQuestion.speedY);
 
         }
         return "An error occured.";

@@ -163,7 +163,7 @@ public class LevelManager : MonoBehaviour
 
         // Show the true indication
         questionManager.trueOrFalse.GetComponent<Text>().color = Color.green;
-        questionManager.trueOrFalse.GetComponent<Text>().text = "Doğru!";
+        questionManager.trueOrFalse.GetComponent<Text>().text = LocalizeBase.GetLocalizedString("correct");
         questionManager.trueOrFalse.GetComponent<Animator>().SetTrigger("setAnim");
 
         //Remove the ball collider from the ball so that when the player is dribbling the ball, the collider on ball doesn't get triggered
@@ -445,7 +445,7 @@ public class LevelManager : MonoBehaviour
         float startTime = Time.time;
         while (Time.time - startTime < duration)
         {
-            dribblingTime.text = "Kalan Zaman : "+ Mathf.Round(startTime - Time.time + 5);
+            dribblingTime.text = LocalizeBase.GetLocalizedString("time_left") + Mathf.Round(startTime - Time.time + 5);
             Vector3 middlePoint = (selectedPlayer.transform.position + targetPlayer.transform.position) / 2;
             closest.GetComponent<PlayerAI>().catchTheBall(middlePoint);
             yield return new WaitForFixedUpdate();
@@ -467,7 +467,7 @@ public class LevelManager : MonoBehaviour
     private void GetReadyForQuestion()
     {
         // Reset text
-        dribblingTime.text = "Kalan Zaman : 5";
+        dribblingTime.text = LocalizeBase.GetLocalizedString("time_left")+5;
 
         // Look at the selected.
         closest.transform.LookAt(selectedPlayer.transform);
@@ -516,12 +516,12 @@ public class LevelManager : MonoBehaviour
         distanceS.LookAt(targetPlayer.transform);
         distanceS.localEulerAngles = new Vector3(0, distanceS.localEulerAngles.y + 90f, 0); ;
         distanceS.GetComponent<SpriteRenderer>().size = new Vector2(Vector3.Distance(selectedPlayer.transform.position, targetPlayer.transform.position), 0.2f);
-        distanceSprite.transform.GetChild(1).GetComponent<TextMesh>().text = "Uzaklık : x";
+        distanceSprite.transform.GetChild(1).GetComponent<TextMesh>().text = LocalizeBase.GetLocalizedString("distance");
         distanceSprite.transform.localPosition = new Vector3(distanceSprite.transform.localPosition.x + 0.55f, -11.02f, distanceSprite.transform.localPosition.z - 5f);
 
         // Angle
         angleSprite.transform.position = ball.transform.position;
-        angleSprite.transform.GetChild(1).GetComponent<TextMesh>().text = "Açı : " + ((angle==0)?"a":angle.ToString()) + "°";
+        angleSprite.transform.GetChild(1).GetComponent<TextMesh>().text = LocalizeBase.GetLocalizedString("angle") + ((angle==0)?"a":angle.ToString()) + "°";
         angleSprite.transform.GetChild(0).localEulerAngles = new Vector3(0, 0, (angle == 0) ? 60 : angle);
     }
 
