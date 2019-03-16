@@ -15,6 +15,8 @@ devs=Developers
 continue=Continue
 close=Close
 ok=Ok
+music_and_effects=Music and Effects:\nGianni Caratelli\nwww.zapsplat.com
+
 tutorial_1_title=Welcome to Tutorial!
 tutorial_1_hint=We recommend you to view the tutorial if you are playing for the first time
 tutorial_dont_show=Don't show again

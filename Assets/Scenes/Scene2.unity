@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4756971, g: 0.52075666, b: 0.56212294, a: 1}
+  m_IndirectSpecularColor: {r: 0.47934288, g: 0.5222549, b: 0.56565577, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1079,6 +1079,7 @@ GameObject:
   - component: {fileID: 83571878}
   - component: {fileID: 83571881}
   - component: {fileID: 83571880}
+  - component: {fileID: 83571882}
   m_Layer: 5
   m_Name: header
   m_TagString: Untagged
@@ -1178,6 +1179,19 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 1.92, y: -1}
   m_UseGraphicAlpha: 1
+--- !u!114 &83571882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 83571876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f6494f51accaf540982126c28507af6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  localizationKey: about
 --- !u!1 &102377657
 GameObject:
   m_ObjectHideFlags: 0
@@ -2710,6 +2724,7 @@ GameObject:
   - component: {fileID: 401403671}
   - component: {fileID: 401403673}
   - component: {fileID: 401403672}
+  - component: {fileID: 401403674}
   m_Layer: 5
   m_Name: info (1)
   m_TagString: Untagged
@@ -2778,6 +2793,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 401403670}
   m_CullTransparentMesh: 0
+--- !u!114 &401403674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401403670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f6494f51accaf540982126c28507af6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  localizationKey: music_and_effects
 --- !u!1 &406549906 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 971882201, guid: 56cc56e29f8583846a489dcb16cd4a80,
