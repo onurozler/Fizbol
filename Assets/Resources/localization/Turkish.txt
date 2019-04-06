@@ -94,3 +94,4 @@ correct=Doğru!
 incorrect=Yanlış!
 change_question_exhausted=Soru değiştirme\nhakkınız bitti!
 reveal_correct_answer=Hakkınız Doldu!\nDoğru cevap :{0}.
+help=yardım

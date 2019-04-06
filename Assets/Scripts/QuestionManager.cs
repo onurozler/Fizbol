@@ -20,6 +20,8 @@ public class QuestionManager : MonoBehaviour
     public GameObject trueOrFalse;
 
     public Text questionText;
+    public Text questionTitle;
+    public GameObject help;
     public InputField answerInput;
     public Text answerText;
     
@@ -150,7 +152,9 @@ public class QuestionManager : MonoBehaviour
 
             levelManager.DisplayInfoSprites(currentQuestion.angle, currentQuestion.distance);
 
+            questionTitle.text = LocalizeBase.GetLocalizedString("question_title");
             questionText.text = GetQuestionText();
+            help.GetComponent<Image>().sprite = Resources.Load<Sprite>("Textures/" + LocalizeBase.GetLocalizedString("help"));
 
             answerText.text = currentQuestion.result.ToString();
             Debug.Log("Answer: " + currentQuestion.result);

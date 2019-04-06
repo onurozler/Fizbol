@@ -254,7 +254,7 @@ public class MainMenuController : MonoBehaviour
         // Get This month
         string today = System.DateTime.Now.ToString("dd/MM/yyyy");
         string[] thisMonth = today.Split(delimeter);
-        chart.transform.parent.GetChild(4).GetComponent<Text>().text = monthName(int.Parse(thisMonth[1])) + LocalizeBase.GetLocalizedString("stats_months_data");
+        chart.transform.parent.GetChild(4).GetComponent<Text>().text = monthName(int.Parse(thisMonth[1])) + " " + LocalizeBase.GetLocalizedString("stats_months_data");
 
         for (int i = 0; i < getWhole.Length; i++)
         {
