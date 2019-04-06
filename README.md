@@ -7,7 +7,8 @@ The aim is to score by answering Physics questions. Player starts with Goalkeep
 
 ## Features
 * Animations & models for characters accordingly.
-* 2D/3D View.
+* 2D/3D View depending on User choice.
+* Our Question generator can create more than 1000 different Physics questions with various of question types.
 * After answering, accurate ball movement according to Physics Question Rules.
 * Low polygon concept in every 3D model that provides good optimization.
 * Detailed settings system for game graphics, musics and effects.
