@@ -551,7 +551,7 @@ public class LevelManager : MonoBehaviour
         if(is3D)
         {
             // Camera position accourding to selected
-            camera2D.transform.position = new Vector3(72f,4f,selectedPlayer.transform.position.z + 25f);
+            camera2D.transform.position = new Vector3(72f,4f,selectedPlayer.transform.position.z + 24f);
 
             // Settings for 2D
             mainCamera.gameObject.SetActive(false);
