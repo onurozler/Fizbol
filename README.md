@@ -3,6 +3,8 @@
 Educational Game with the purpose of teaching high school students physics. In Game main aim is to score by answering Physics Questions.
 Available on Google Play : https://bit.ly/2IiiERq
 
+Gameplay on Youtube : https://youtu.be/ZudGxxRbU1c
+
 ## How to Play
 Player starts as the goalkeeper. His/her goal is to answer physics questions in order to pass the ball to his/her teammates and eventually score a goal. If Player answers correctly, he/she can pass the ball to a teammate accordingly. Otherwise Player can figure correct answer out by observing ball movement. Player can change question or get hint from the help button. If Player answers wrong more than 3 times, the true answer is shown and it doesn't count in statistics.
 
